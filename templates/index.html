@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SA | DOWNLOADER</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  font-family:'Cairo', sans-serif;
+  background: linear-gradient(135deg,#141e30,#243b55);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
+  flex-direction:column;
+}
+
+.box{
+  background:rgba(255,255,255,0.05);
+  padding:40px;
+  border-radius:20px;
+  backdrop-filter: blur(10px);
+  text-align:center;
+  box-shadow:0 0 30px rgba(0,0,0,0.4);
+  max-width:400px;
+  width:90%;
+}
+
+h1{
+  font-size:38px;
+  margin-bottom:10px;
+}
+
+p{
+  opacity:0.8;
+  margin-bottom:20px;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:10px;
+  font-family:'Cairo', sans-serif;
+}
+
+select{
+  margin-top:15px;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  font-family:'Cairo', sans-serif;
+  width:100%;
+}
+
+button{
+  margin-top:15px;
+  padding:12px 25px;
+  border:none;
+  border-radius:10px;
+  background:#00c6ff;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+  font-family:'Cairo', sans-serif;
+  transition:0.3s;
+  width:100%;
+}
+
+button:hover{
+  background:#0072ff;
+  transform:scale(1.05);
+}
+
+.footer{
+  position:fixed;
+  bottom:10px;
+  font-size:14px;
+  opacity:0.9;
+  font-family:'Cairo', sans-serif;
+  width:100%;
+  text-align:center;
+}
+
+.footer a{
+  color:#00c6ff;
+  text-decoration:none;
+}
+
+.footer a:hover{
+  text-decoration:underline;
+}
+
+@media screen and (max-width:500px){
+  h1{font-size:32px;}
+  input, select, button{font-size:15px;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h1>SA | DOWNLOADER</h1>
+  <p>يمكنك من خلال هذا الموقع تحميل اي فيديو وبدون اي علامة مائية ⚡</p>
+
+  <form method="post">
+    <input type="text" name="url" placeholder="ضع رابط الفيديو هنا" required>
+
+    <select name="type">
+      <option value="video">تحميل كفيديو</option>
+      <option value="audio">تحميل كصوت</option>
+    </select>
+
+    <button type="submit">تحميل</button>
+  </form>
+</div>
+
+<div class="footer">
+   تم صنع بواسطة صالح مهدي جبل 🟢
+   <br><br>
+   تيك توك:
+   <a href="https://www.tiktok.com/@0pag_" target="_blank">0pag_</a>
+   <br>
+   تليجرام:
+   <a href="https://t.me/wi6j1" target="_blank">wi6j1</a>
+</div>
+
+</body>
+</html>

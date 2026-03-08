@@ -25,12 +25,20 @@ def index():
         try:
 
             ydl_opts = {
-                "format": "bv*+ba/b",
+                "format": "best",
                 "outtmpl": filename + ".%(ext)s",
                 "quiet": True,
                 "noplaylist": True,
+                "nocheckcertificate": True,
+                "geo_bypass": True,
                 "http_headers": {
-                    "User-Agent": "Mozilla/5.0"
+                    "User-Agent": "Mozilla/5.0 (Linux; Android 10)",
+                    "Accept-Language": "en-US,en;q=0.9"
+                },
+                "extractor_args": {
+                    "youtube": {
+                        "player_client": ["android"]
+                    }
                 }
             }
 
@@ -39,7 +47,7 @@ def index():
                 ydl_opts["postprocessors"] = [{
                     "key": "FFmpegExtractAudio",
                     "preferredcodec": "mp3",
-                    "preferredquality": "192",
+                    "preferredquality": "192"
                 }]
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -60,7 +68,6 @@ def index():
     return render_template("index.html")
 
 
-# تشغيل السيرفر على Railway
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port)

@@ -1,34 +1,30 @@
 from flask import Flask, request, render_template, send_file
 import yt_dlp
 import os
+import tempfile
 
 app = Flask(__name__)
 
 @app.route("/", methods=["GET","POST"])
 def index():
-
     if request.method == "POST":
-
         url = request.form["url"]
         mode = request.form["type"]
+        temp_dir = tempfile.gettempdir()  # مجلد مؤقت
 
         try:
-
             if mode == "video":
-
+                filename = os.path.join(temp_dir, "video.mp4")
                 ydl_opts = {
                     "format": "bestvideo+bestaudio/best",
                     "merge_output_format": "mp4",
-                    "outtmpl": "video.%(ext)s"
+                    "outtmpl": filename
                 }
-
-                filename = "video.mp4"
-
             else:
-
+                filename = os.path.join(temp_dir, "audio.mp3")
                 ydl_opts = {
                     "format": "bestaudio/best",
-                    "outtmpl": "audio.%(ext)s",
+                    "outtmpl": filename,
                     "postprocessors": [{
                         "key": "FFmpegExtractAudio",
                         "preferredcodec": "mp3",
@@ -36,18 +32,15 @@ def index():
                     }]
                 }
 
-                filename = "audio.mp3"
-
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([url])
 
             return send_file(filename, as_attachment=True)
 
-        except:
-            return "حدث خطأ أثناء التحميل"
+        except Exception as e:
+            return f"حدث خطأ أثناء التحميل: {str(e)}"
 
     return render_template("index.html")
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

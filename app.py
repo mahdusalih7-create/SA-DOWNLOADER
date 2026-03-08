@@ -1,52 +1,52 @@
-from flask import Flask, request, render_template, send_file
+from flask import Flask, render_template, request, send_file
 import yt_dlp
 import os
-import tempfile
+import uuid
 
 app = Flask(__name__)
 
-# مسار ffmpeg المرفق داخل المشروع
-ffmpeg_path = os.path.join(os.path.dirname(__file__), "ffmpeg", "ffmpeg")
+DOWNLOAD_FOLDER = "downloads"
+
+if not os.path.exists(DOWNLOAD_FOLDER):
+    os.makedirs(DOWNLOAD_FOLDER)
 
 @app.route("/", methods=["GET","POST"])
 def index():
     if request.method == "POST":
         url = request.form["url"]
-        mode = request.form["type"]
-        temp_dir = tempfile.gettempdir()
+        type_download = request.form["type"]
+
+        file_id = str(uuid.uuid4())
+        filename = os.path.join(DOWNLOAD_FOLDER, file_id)
 
         try:
-            if mode == "video":
-                filename = os.path.join(temp_dir, "video.mp4")
-                ydl_opts = {
-                    "format": "bestvideo+bestaudio/best",
-                    "merge_output_format": "mp4",
-                    "outtmpl": filename,
-                    "ffmpeg_location": ffmpeg_path
+            ydl_opts = {
+                "format": "bv*+ba/b",
+                "outtmpl": filename + ".%(ext)s",
+                "quiet": True,
+                "http_headers": {
+                    "User-Agent": "Mozilla/5.0"
                 }
-            else:
-                filename = os.path.join(temp_dir, "audio.mp3")
-                ydl_opts = {
-                    "format": "bestaudio/best",
-                    "outtmpl": filename,
-                    "postprocessors": [{
-                        "key": "FFmpegExtractAudio",
-                        "preferredcodec": "mp3",
-                        "preferredquality": "192",
-                        "ffmpeg_location": ffmpeg_path
-                    }]
-                }
+            }
+
+            if type_download == "audio":
+                ydl_opts["postprocessors"] = [{
+                    "key": "FFmpegExtractAudio",
+                    "preferredcodec": "mp3",
+                    "preferredquality": "192"
+                }]
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                ydl.download([url])
+                info = ydl.extract_info(url, download=True)
+                ext = "mp3" if type_download == "audio" else info["ext"]
 
-            return send_file(filename, as_attachment=True)
+            file_path = filename + "." + ext
+
+            return send_file(file_path, as_attachment=True)
 
         except Exception as e:
             return f"حدث خطأ أثناء التحميل: {str(e)}"
 
     return render_template("index.html")
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+app.run(host="0.0.0.0", port=3000)

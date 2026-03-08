@@ -5,12 +5,15 @@ import tempfile
 
 app = Flask(__name__)
 
+# مسار ffmpeg المرفق داخل المشروع
+ffmpeg_path = os.path.join(os.path.dirname(__file__), "ffmpeg", "ffmpeg")
+
 @app.route("/", methods=["GET","POST"])
 def index():
     if request.method == "POST":
         url = request.form["url"]
         mode = request.form["type"]
-        temp_dir = tempfile.gettempdir()  # مجلد مؤقت
+        temp_dir = tempfile.gettempdir()
 
         try:
             if mode == "video":
@@ -18,7 +21,8 @@ def index():
                 ydl_opts = {
                     "format": "bestvideo+bestaudio/best",
                     "merge_output_format": "mp4",
-                    "outtmpl": filename
+                    "outtmpl": filename,
+                    "ffmpeg_location": ffmpeg_path
                 }
             else:
                 filename = os.path.join(temp_dir, "audio.mp3")
@@ -29,6 +33,7 @@ def index():
                         "key": "FFmpegExtractAudio",
                         "preferredcodec": "mp3",
                         "preferredquality": "192",
+                        "ffmpeg_location": ffmpeg_path
                     }]
                 }
 

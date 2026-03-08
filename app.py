@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, send_file
 import yt_dlp
 import os
 import uuid
+import time
 
 app = Flask(__name__)
 
@@ -31,10 +32,16 @@ def index():
                 "noplaylist": True,
                 "nocheckcertificate": True,
                 "geo_bypass": True,
+
+                # تقليل الحظر
+                "sleep_interval": 2,
+                "max_sleep_interval": 5,
+
                 "http_headers": {
                     "User-Agent": "Mozilla/5.0 (Linux; Android 10)",
                     "Accept-Language": "en-US,en;q=0.9"
                 },
+
                 "extractor_args": {
                     "youtube": {
                         "player_client": ["android"]
@@ -60,7 +67,16 @@ def index():
 
             file_path = filename + "." + ext
 
-            return send_file(file_path, as_attachment=True)
+            response = send_file(file_path, as_attachment=True)
+
+            # حذف الملف بعد الإرسال
+            try:
+                time.sleep(2)
+                os.remove(file_path)
+            except:
+                pass
+
+            return response
 
         except Exception as e:
             return f"حدث خطأ أثناء التحميل: {str(e)}"

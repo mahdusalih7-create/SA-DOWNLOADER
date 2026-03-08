@@ -10,35 +10,45 @@ DOWNLOAD_FOLDER = "downloads"
 if not os.path.exists(DOWNLOAD_FOLDER):
     os.makedirs(DOWNLOAD_FOLDER)
 
-@app.route("/", methods=["GET","POST"])
+
+@app.route("/", methods=["GET", "POST"])
 def index():
+
     if request.method == "POST":
-        url = request.form["url"]
-        type_download = request.form["type"]
+
+        url = request.form.get("url")
+        download_type = request.form.get("type")
 
         file_id = str(uuid.uuid4())
         filename = os.path.join(DOWNLOAD_FOLDER, file_id)
 
         try:
+
             ydl_opts = {
                 "format": "bv*+ba/b",
                 "outtmpl": filename + ".%(ext)s",
                 "quiet": True,
+                "noplaylist": True,
                 "http_headers": {
                     "User-Agent": "Mozilla/5.0"
                 }
             }
 
-            if type_download == "audio":
+            # تحميل صوت
+            if download_type == "audio":
                 ydl_opts["postprocessors"] = [{
                     "key": "FFmpegExtractAudio",
                     "preferredcodec": "mp3",
-                    "preferredquality": "192"
+                    "preferredquality": "192",
                 }]
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(url, download=True)
-                ext = "mp3" if type_download == "audio" else info["ext"]
+
+                if download_type == "audio":
+                    ext = "mp3"
+                else:
+                    ext = info.get("ext", "mp4")
 
             file_path = filename + "." + ext
 
@@ -49,4 +59,8 @@ def index():
 
     return render_template("index.html")
 
-app.run(host="0.0.0.0", port=3000)
+
+# تشغيل السيرفر على Railway
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port)
